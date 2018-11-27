@@ -1,6 +1,5 @@
 #Set Working Directory
 
-setwd("C:/Users/Abraham Lin/Desktop/ml-latest-small/")
 
 #Import Libraries
 library(ggplot2)
@@ -8,7 +7,7 @@ library(data.table)
 library(reshape2)
 
 #Import Data
-data <- read.csv("movies.csv", header =TRUE, stringsAsFactors = FALSE)
+data <- read.csv(file.choose(), header = TRUE, stringsAsFactors = FALSE)
 
 #Extract the tags for each movie
 tags <- as.data.frame(data$genres, stringsAsFactors = FALSE)
@@ -37,7 +36,42 @@ for (i in 1:nrow(tags2)){
   }
 }
 
+#convert matrix into dataframe
+#exclude the first row
+tag_matrix2 <- as.data.frame(tag_matrix[-1,], stringsAsFactors = FALSE)
+
+for (i in 1:ncol(tag_matrix2)) {
+  tag_matrix2[,i] <- as.integer(tag_matrix2[,i])
+}
 
 
-  
-    
+#build user profiles
+user_data <- read.csv(file.choose(), stringsAsFactors = FALSE, header = TRUE)
+
+binaryratings <- user_data
+for (i in 1:nrow((binaryratings))){
+  if (binaryratings[i,3] > 3){
+    binaryratings[i,3] <- 1
+  }
+  else{
+    binaryratings[i,3] <- -1
+  }
+}
+
+binaryratings2 <- dcast(binaryratings, movieId~userId, value.var="rating", na.rm=FALSE)
+for (i in 1:ncol(binaryratings2)){
+  binaryratings2[which(is.na(binaryratings2[,i]) == TRUE), i] <- 0
+}
+binaryratings2 = binaryratings2[,-1]
+
+#remove rows of movies that have no ratings
+rated_movies <- as.data.frame(unique(user_data$movieId))
+colnames(rated_movies) <- c("movieId")
+
+
+data2 <- filter(data, movieId %in% rated_movies$movieId)
+
+
+
+
+
