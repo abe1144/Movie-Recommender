@@ -53,7 +53,7 @@ sim_mat = cosine_similarity(count_matrix, count_matrix)
 indices = pd.Series(data.index, index=data['Title']).drop_duplicates()
 
 def get_recommendations(movie_title):
-    #get the index that matches the title
+    #get the index that git coomatches the title
     idx = indices[movie_title]
     
     sim_scores = list(enumerate(sim_mat[idx]))
